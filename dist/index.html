@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="研发业务流程管理系统合同流程第一版" />
+    <title>研发业务流程管理系统</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="研发业务流程管理系统首页">
+          <span class="brand-mark" aria-hidden="true">研</span>
+          <span><strong>研发业务流程管理系统</strong><small>业务流程中心</small></span>
+        </a>
+        <div class="topbar-meta"><span class="status-dot"></span>合同流程 · V1.0</div>
+      </header>
+
+      <main>
+        <section class="intro">
+          <div>
+            <p class="eyebrow">合同流程</p>
+            <h1>先判断合同类型，再看完整办理路径</h1>
+            <p>选择是否付款与金额区间，系统会展示对应步骤、责任角色、所需材料和关键提醒。</p>
+          </div>
+          <div class="intro-stats" aria-label="流程概况">
+            <div><strong>5</strong><span>执行路线</span></div>
+            <div><strong id="stepCount">2</strong><span>当前步骤</span></div>
+            <div><strong id="documentCount">2</strong><span>材料类型</span></div>
+          </div>
+        </section>
+
+        <section class="decision-panel" aria-labelledby="decision-title">
+          <div class="section-heading">
+            <div><span class="step-kicker">01</span><h2 id="decision-title">选择合同情形</h2></div>
+            <p>金额口径沿用《0-主要流程-V01》</p>
+          </div>
+          <div class="route-tabs" role="tablist" aria-label="合同情形" id="routeTabs"></div>
+          <div class="route-summary" id="routeSummary" aria-live="polite"></div>
+        </section>
+
+        <section class="workflow-section" aria-labelledby="workflow-title">
+          <div class="section-heading">
+            <div><span class="step-kicker">02</span><h2 id="workflow-title">办理路径</h2></div>
+            <div class="legend"><span><i class="oa"></i>OA</span><span><i class="offline"></i>线下</span><span><i class="finance"></i>智慧报账</span></div>
+          </div>
+          <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+          <div class="workflow-layout">
+            <div class="flow-canvas" id="flowCanvas"></div>
+            <aside class="detail-panel" id="detailPanel" aria-live="polite"></aside>
+          </div>
+        </section>
+
+        <section class="risk-section" aria-labelledby="risk-title">
+          <div class="section-heading">
+            <div><span class="step-kicker">03</span><h2 id="risk-title">时效与风险提醒</h2></div>
+          </div>
+          <div class="risk-grid">
+            <article><span>约 1 个月</span><h3>等待招标</h3><p>招议标审核或集中采购申请完成后，开标时间通常较长且不可控。</p></article>
+            <article><span>约 1 个月</span><h3>等待中标通知</h3><p>开标完成至收到中标通知仍可能经历较长等待。</p></article>
+            <article class="urgent"><span>30 个自然日</span><h3>中标后合同签订窗口</h3><p>合同技术、商务、法务多轮修订通常需 2–4 周，应在等待阶段提前准备。</p></article>
+          </div>
+        </section>
+      </main>
+      <footer>依据《0-主要流程-V01》整理 · 第一版仅覆盖合同流程</footer>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>
