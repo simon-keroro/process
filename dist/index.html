@@ -15,7 +15,7 @@
           <span class="brand-mark" aria-hidden="true">研</span>
           <span><strong>血液制品研究院业务流程管理系统</strong><small>业务流程可视化APP</small></span>
         </a>
-        <div class="topbar-meta"><span class="status-dot"></span>合同流程 · V2.0</div>
+        <div class="topbar-meta">合同流程 · V2.1</div>
       </header>
 
       <main>
@@ -25,13 +25,15 @@
               <div><span class="step-kicker">01</span><h2 id="decision-title">选择合同金额</h2></div>
               <p>采购金额分类来源：《XXXXX文件》</p>
             </div>
-            <div class="route-tabs" role="tablist" aria-label="合同情形" id="routeTabs"></div>
+            <div class="selector-row">
+              <div class="route-tabs" role="tablist" aria-label="合同情形" id="routeTabs"></div>
+              <div class="intro-stats" aria-label="流程概况">
+                <div><strong>5</strong><span>金额种类</span></div>
+                <div><strong id="stepCount">2</strong><span>步骤</span></div>
+                <div><strong id="documentCount">2</strong><span>材料</span></div>
+              </div>
+            </div>
             <div class="route-summary" id="routeSummary" aria-live="polite"></div>
-          </div>
-          <div class="intro-stats" aria-label="流程概况">
-            <div><strong>5</strong><span>金额种类</span></div>
-            <div><strong id="stepCount">2</strong><span>所需步骤数</span></div>
-            <div><strong id="documentCount">2</strong><span>所需文件材料总数</span></div>
           </div>
         </section>
 
@@ -58,7 +60,7 @@
           </div>
         </section>
       </main>
-      <footer>依据《0-主要流程-V01》整理 · V2.0 仅覆盖合同流程</footer>
+      <footer>依据《0-主要流程-V01》整理 · V2.1 仅覆盖合同流程</footer>
     </div>
     <script src="./app.js"></script>
   </body>
