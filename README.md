@@ -22,6 +22,16 @@ docker compose up -d --build
 
 默认使用服务器 `8080` 端口。生产环境可由现有 Nginx 或 Caddy 反向代理到该端口并配置 HTTPS。
 
+### 更新与缓存
+
+发布新版本时，应同步更新 `dist/index.html` 中 CSS、JavaScript 和图标资源地址后的版本参数，例如 `styles.css?v=2.2`。项目内置的 Nginx 配置会要求浏览器重新验证这些文件，避免线上继续显示旧版页面。
+
+重新部署时使用：
+
+```bash
+docker compose up -d --build --force-recreate
+```
+
 ## GitHub 版本管理
 
 ### 版本号规则
