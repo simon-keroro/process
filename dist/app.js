@@ -47,20 +47,47 @@ function bidSteps(needsRequest){
   return arr;
 }
 
-let activeRoute=routes[0],activeStep=0;
+let activeWorkflow="contract", activeRoutes=routes, activeRoute=routes[0],activeStep=0;
+const originalRisks=document.querySelector(".risk-grid").innerHTML;
+const originalSource=document.querySelector(".decision-main .section-heading p").textContent;
 const tabs=document.querySelector("#routeTabs"),canvas=document.querySelector("#flowCanvas"),detail=document.querySelector("#detailPanel");
-routes.forEach((route,i)=>{const b=document.createElement("button");b.className="route-tab";b.role="tab";b.textContent=route.label;b.setAttribute("aria-selected",i===0);b.onclick=()=>selectRoute(route.id);tabs.appendChild(b)});
+function renderTabs(){
+  tabs.innerHTML="";
+  activeRoutes.forEach((route,i)=>{const b=document.createElement("button");b.className="route-tab";b.role="tab";b.textContent=route.label;b.setAttribute("aria-selected",i===0);b.onclick=()=>selectRoute(route.id);tabs.appendChild(b)});
+}
+function selectWorkflow(id){
+  activeWorkflow=id;
+  activeRoutes=id==="equipment"?equipmentRoutes:routes;
+  activeRoute=activeRoutes[0]; activeStep=0;
+  document.querySelectorAll("[data-workflow]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.workflow===id));
+  document.querySelector("#decision-title").textContent=id==="equipment"?"选择设备采购金额":"选择合同金额";
+  tabs.setAttribute("aria-label",id==="equipment"?"设备采购情形":"合同情形");
+  document.querySelector("#routeCount").textContent=activeRoutes.length;
+  document.querySelector(".decision-main .section-heading p").textContent=id==="equipment"?"依据《0-设备采购流程-V01》":originalSource;
+  document.querySelector(".legend .finance").nextSibling.textContent=id==="equipment"?"SAP":"智慧报账";
+  document.querySelector(".risk-grid").innerHTML=id==="equipment"
+    ? '<article><span>URS</span><h3>强制项不超过 15%</h3><p>URS 需找黄海登记编号，签字后附于设备购置申请审批表后。</p></article><article><span>请示材料</span><h3>按金额附相应请示</h3><p>100 万以上 500 万以内附两级请示；500 万以上附三级请示。</p></article><article><span>文档范围</span><h3>止于提交生产管理部</h3><p>设备流程未说明后续验收、付款等步骤，需另行确认。</p></article>'
+    :originalRisks;
+  document.querySelector("footer").textContent=`依据《0-${id==="equipment"?"设备采购":"合同"}流程-V01》整理 · V3.0`;
+  renderTabs(); render();
+}
+document.querySelectorAll("[data-workflow]").forEach(b=>b.onclick=()=>selectWorkflow(b.dataset.workflow));
 
-function selectRoute(id){activeRoute=routes.find(r=>r.id===id);activeStep=0;[...tabs.children].forEach((b,i)=>b.setAttribute("aria-selected",routes[i].id===id));render()}
-function phaseName(index,total){if(index===0)return["发起准备","确认范围与审批"];if(index===total-1)return["付款归档","完成合同闭环"];if(index<Math.ceil(total*.55))return["采购审批","询价、招采与定标"];return["合同执行","会签、签章与支付"]}
+function selectRoute(id){activeRoute=activeRoutes.find(r=>r.id===id);activeStep=0;[...tabs.children].forEach((b,i)=>b.setAttribute("aria-selected",activeRoutes[i].id===id));render()}
+function phaseName(index,total){if(activeWorkflow==="equipment")return[activeRoute.steps[index].phase,""];if(index===0)return["发起准备","确认范围与审批"];if(index===total-1)return["付款归档","完成合同闭环"];if(index<Math.ceil(total*.55))return["采购审批","询价、招采与定标"];return["合同执行","会签、签章与支付"]}
 function render(){
   const docs=new Set(activeRoute.steps.flatMap(x=>x.materials));
   document.querySelector("#stepCount").textContent=activeRoute.steps.length;document.querySelector("#documentCount").textContent=docs.size;
   document.querySelector("#routeSummary").innerHTML=`<strong>${activeRoute.range}</strong><span>${activeRoute.summary}</span>`;
-  document.querySelector("#progressBar").style.width=`${((activeStep+1)/activeRoute.steps.length)*100}%`;
+  document.querySelector("#progressBar").style.width=activeRoute.steps.length?`${((activeStep+1)/activeRoute.steps.length)*100}%`:"0%";
+  if(!activeRoute.steps.length){
+    canvas.innerHTML='<div class="empty-route"><h3>该金额区间流程待确认</h3><p>请先联系流程负责人确认办理路径。</p></div>';
+    detail.innerHTML='<h3>源文档未提供规则</h3><p>暂不展示推测的审批步骤。</p>';
+    return;
+  }
   canvas.innerHTML="";let currentPhase="",group;
   activeRoute.steps.forEach((step,i)=>{const [name,desc]=phaseName(i,activeRoute.steps.length);if(name!==currentPhase){currentPhase=name;group=document.createElement("section");group.className="phase";group.innerHTML=`<div class="phase-label"><strong>${name}</strong><span>${desc}</span></div><div class="phase-nodes"></div>`;canvas.appendChild(group)}const wrap=document.createElement("div");wrap.className="node-wrap";wrap.innerHTML=`<button class="flow-node ${i===activeStep?"active":""}" data-channel="${step.channel}" aria-label="查看第 ${i+1} 步 ${step.title}"><span class="node-top"><span class="node-index">${String(i+1).padStart(2,"0")}</span><span>${step.channel}</span></span><h3>${step.title}</h3><p>${step.owner}</p></button>`;wrap.querySelector("button").onclick=()=>{activeStep=i;render()};group.querySelector(".phase-nodes").appendChild(wrap)});
   renderDetail();
 }
 function renderDetail(){const step=activeRoute.steps[activeStep];detail.innerHTML=`<span class="detail-index">步骤 ${String(activeStep+1).padStart(2,"0")} / ${String(activeRoute.steps.length).padStart(2,"0")}</span><h3>${step.title}</h3><div class="detail-meta"><span class="pill">${step.owner}</span><span class="pill">${step.system}</span></div><h4>所需材料</h4>${step.materials.length?`<ul>${step.materials.map(x=>`<li>${x}</li>`).join("")}</ul>`:"<p>无额外材料</p>"}${step.note?`<div class="detail-note"><strong>办理提醒</strong><br>${step.note}</div>`:""}`}
-render();
+selectWorkflow("contract");
