@@ -10,6 +10,7 @@ function equipmentSteps(level) {
   }
   if (level === 3) steps.push(step("天坛公司请示", "申请人", "OA", ["北京天坛生物制品股份有限公司部门（中心/大区）请示处理笺"], "", "请示审批"));
   steps.push(step("采购事项审批", "申请人", "OA", ["血液制品研究院采购事项审批表", ...(level >= 2 ? [level === 3 ? "三级请示" : "两级请示"] : [])], level >= 2 ? "附上前述全部层级的请示。" : "", "购置准备"));
+  if (level >= 2) steps.push(step("天坛集中采购申请", "申请人 / 天坛集采", "OA", ["北京天坛生物制品股份有限公司集中采购申请表", "采购事项审批材料"], "100 万以上设备按天坛集中采购流程办理。", "天坛集采"));
   steps.push(step("填写设备购置申请", "申请人", "线下", [form], "", "购置准备"));
   if (level >= 1) steps.push(step("编写并登记 URS", "申请人 / 黄海", "线下", ["URS", form], "找黄海登记产生 URS 编号。强制项条款不超过全部条款的 15%；签字后附于设备购置申请审批表后。", "购置准备"));
   steps.push(
@@ -31,7 +32,9 @@ const equipmentRoutes = [
     {title:"备品备件备料",owner:"申请人",channel:"OA",system:"OA",materials:["设备设施备品备件备料单"],note:"办理备料单，采购备品备件。",phase:"备品备件"}
   ]},
   {id:"under-20",label:"20 万元以内",range:"20 万元以内",summary:"采购事项审批后，完成设备购置申请审核、资产编号和 SAP 采购申请。",steps:equipmentSteps(0)},
-  {id:"20-100",label:"20–100 万元",range:"20 万以上 100 万以内",summary:"增加 URS 编写、编号登记和签字，其余沿用 20 万以内流程。",steps:equipmentSteps(1)},
-  {id:"100-500",label:"100–500 万元",range:"100 万以上 500 万以内",summary:"先完成研究院和蓉生两级请示，采购事项审批附两级请示，其余沿用 20–100 万元流程。",steps:equipmentSteps(2)},
+  {id:"20-50",label:"20–50 万元",range:"20 万以上 50 万以内",summary:"增加 URS 编写、编号登记和签字，其余沿用 20 万以内流程。",steps:equipmentSteps(1)},
+  {id:"50-100-in",label:"50–100 万元 · 目录内",range:"50 万以上 100 万以内 · 目录内",summary:"设备在《北京天坛生物制品股份有限公司集中采购目录》中，按 100–500 万元天坛集采流程执行。",steps:equipmentSteps(2)},
+  {id:"50-100-out",label:"50–100 万元 · 目录外",range:"50 万以上 100 万以内 · 目录外",summary:"设备不在集中采购目录中，按 20–50 万元流程执行。",steps:equipmentSteps(1)},
+  {id:"100-500",label:"100–500 万元",range:"100 万以上 500 万以内",summary:"按天坛集中采购流程办理，先完成研究院和蓉生两级请示，采购事项审批附两级请示。",steps:equipmentSteps(2)},
   {id:"over-500",label:"500 万元以上",range:"500 万元以上",summary:"增加天坛公司请示，采购事项审批需附三级请示。",steps:equipmentSteps(3)}
 ];

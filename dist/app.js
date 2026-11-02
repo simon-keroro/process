@@ -68,7 +68,7 @@ function selectWorkflow(id){
   document.querySelector(".risk-grid").innerHTML=id==="equipment"
     ? '<article><span>URS</span><h3>强制项不超过 15%</h3><p>URS 需找黄海登记编号，签字后附于设备购置申请审批表后。</p></article><article><span>请示材料</span><h3>按金额附相应请示</h3><p>100 万以上 500 万以内附两级请示；500 万以上附三级请示。</p></article><article><span>文档范围</span><h3>止于提交生产管理部</h3><p>设备流程未说明后续验收、付款等步骤，需另行确认。</p></article>'
     :originalRisks;
-  document.querySelector("footer").textContent=`依据《0-${id==="equipment"?"设备采购":"合同"}流程-V01》整理 · V4.0`;
+  document.querySelector("footer").textContent=`依据《0-${id==="equipment"?"设备采购":"合同"}流程-V01》整理 · V5.0`;
   renderTabs(); render();
 }
 document.querySelectorAll("[data-workflow]").forEach(b=>b.onclick=()=>selectWorkflow(b.dataset.workflow));
