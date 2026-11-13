@@ -66,9 +66,9 @@ function selectWorkflow(id){
   document.querySelector(".decision-main .section-heading p").textContent=id==="equipment"?"依据《0-设备采购流程-V01》":originalSource;
   document.querySelector(".legend .finance").nextSibling.textContent=id==="equipment"?"SAP":"智慧报账";
   document.querySelector(".risk-grid").innerHTML=id==="equipment"
-    ? '<article><span>URS</span><h3>强制项不超过 15%</h3><p>URS 需找黄海登记编号，签字后附于设备购置申请审批表后。</p></article><article><span>请示材料</span><h3>集采设备附三级请示</h3><p>50–100 万元目录内、100–500 万元及 500 万元以上，均需研究院、蓉生经营类及天坛公司请示。</p></article><article><span>文档范围</span><h3>止于提交生产管理部</h3><p>设备流程未说明后续验收、付款等步骤，需另行确认。</p></article>'
+    ? '<article><span>URS</span><h3>强制项不超过 15%</h3><p>URS 需找黄海登记编号，签字后附于设备购置申请审批表后。</p></article><article><span>请示材料</span><h3>集采设备附三级请示</h3><p>50–100 万元目录内、100–500 万元及 500 万元以上，均需研究院、蓉生经营类及天坛公司请示。</p></article>'
     :originalRisks;
-  document.querySelector("footer").textContent=`依据《0-${id==="equipment"?"设备采购":"合同"}流程-V01》整理 · V6.0`;
+  document.querySelector("footer").textContent=`依据《0-${id==="equipment"?"设备采购":"合同"}流程-V01》整理 · V6.1`;
   renderTabs(); render();
 }
 document.querySelectorAll("[data-workflow]").forEach(b=>b.onclick=()=>selectWorkflow(b.dataset.workflow));
