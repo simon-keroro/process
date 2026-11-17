@@ -56,8 +56,42 @@ const workflowConfig = {
   equipment: {routes:equipmentRoutes, title:"选择设备采购金额", count:"金额种类", source:"依据《0-设备采购流程-V01》", footer:"依据《0-设备采购流程-V01》整理"},
   acceptance: {routes:acceptanceRoutes, title:"设备验收", count:"办理情形", source:"", footer:"设备验收流程"},
   validation: {routes:validationRoutes, title:"选择验证情形", count:"验证情形", source:"", footer:"验证流程"},
-  major: {routes:[], title:"三重一大流程", count:"办理情形", source:"", footer:"三重一大流程"}
+  major: {routes:majorCategories, title:"选择事项类别", count:"事项类别", source:"", footer:"三重一大流程"}
 };
+let majorPath=[];
+function selectMajorOption(depth,id){
+  majorPath=majorPath.slice(0,depth);
+  let options=majorCategories;
+  for(const selected of majorPath) options=options.find(option=>option.id===selected).children;
+  let node=options.find(option=>option.id===id);
+  majorPath.push(node.id);
+  while(node.children){node=node.children[0];majorPath.push(node.id);}
+  const labels=[];
+  options=majorCategories;
+  for(const selected of majorPath){const option=options.find(item=>item.id===selected);labels.push(option.label);options=option.children;}
+  activeRoute={...node,range:labels.join(" / "),summary:node.description||""};
+  activeStep=0;
+  [...tabs.children].forEach((button,i)=>button.setAttribute("aria-selected",majorCategories[i].id===majorPath[0]));
+  const container=document.querySelector("#subrouteSelectors");
+  container.innerHTML="";
+  options=majorCategories.find(option=>option.id===majorPath[0]).children;
+  let level=1;
+  while(options){
+    const row=document.createElement("div");row.className="subroute-row";row.role="group";row.setAttribute("aria-label",level===1?"办理事项":"临床项目范围");
+    const selectedLevel=level;
+    options.forEach(option=>{
+      const button=document.createElement("button");button.type="button";button.className="route-tab subroute-option";
+      button.setAttribute("aria-pressed",option.id===majorPath[level]);
+      const title=document.createElement("span");title.textContent=option.label;button.appendChild(title);
+      if(option.description){const description=document.createElement("small");description.textContent=option.description;button.appendChild(description);}
+      button.onclick=()=>selectMajorOption(selectedLevel,option.id);row.appendChild(button);
+    });
+    container.appendChild(row);
+    options=options.find(option=>option.id===majorPath[level]).children;level++;
+  }
+  container.hidden=!container.children.length;
+  render();
+}
 function renderTabs(){
   tabs.innerHTML="";
   activeRoutes.forEach((route,i)=>{const b=document.createElement("button");b.className="route-tab";b.role="tab";b.textContent=route.label;b.setAttribute("aria-selected",i===0);b.onclick=()=>selectRoute(route.id);tabs.appendChild(b)});
@@ -73,7 +107,11 @@ function selectWorkflow(id){
   document.querySelector("#routeCount").nextElementSibling.textContent=config.count;
   document.querySelector("#routeCount").textContent=activeRoutes.length;
   document.querySelector(".decision-main .section-heading p").textContent=config.source;
-  document.querySelector(".decision-panel").hidden=id==="major";
+  document.querySelector(".decision-panel").hidden=false;
+  document.querySelector("#subrouteSelectors").hidden=true;
+  document.querySelector("#subrouteSelectors").innerHTML="";
+  document.querySelector("#routeSummary").classList.toggle("major-summary",id==="major");
+  document.querySelector("#documentCount").parentElement.hidden=id==="major";
   document.querySelector(".risk-section").hidden=!["contract","equipment"].includes(id);
   document.querySelector(".legend").hidden=id==="major";
   document.querySelector(".legend .finance").parentElement.hidden=!["contract","equipment"].includes(id);
@@ -82,12 +120,13 @@ function selectWorkflow(id){
   document.querySelector(".risk-grid").innerHTML=id==="equipment"
     ? '<article><span>URS</span><h3>强制项不超过 15%</h3><p>URS 需找黄海登记编号，签字后附于设备购置申请审批表后。</p></article><article><span>请示材料</span><h3>集采设备附三级请示</h3><p>50–100 万元目录内、100–500 万元及 500 万元以上，均需研究院、蓉生经营类及天坛公司请示。</p></article>'
     :originalRisks;
-  document.querySelector("footer").textContent=`${config.footer} · V7.0`;
-  renderTabs(); render();
+  document.querySelector("footer").textContent=`${config.footer} · V8.0`;
+  renderTabs();
+  if(id==="major")selectMajorOption(0,majorCategories[0].id);else render();
 }
 document.querySelectorAll("[data-workflow]").forEach(b=>b.onclick=()=>selectWorkflow(b.dataset.workflow));
 
-function selectRoute(id){activeRoute=activeRoutes.find(r=>r.id===id);activeStep=0;[...tabs.children].forEach((b,i)=>b.setAttribute("aria-selected",activeRoutes[i].id===id));render()}
+function selectRoute(id){if(activeWorkflow==="major"){selectMajorOption(0,id);return;}activeRoute=activeRoutes.find(r=>r.id===id);activeStep=0;[...tabs.children].forEach((b,i)=>b.setAttribute("aria-selected",activeRoutes[i].id===id));render()}
 function phaseName(index,total){if(activeWorkflow!=="contract")return[activeRoute.steps[index].phase,""];if(index===0)return["发起准备","确认范围与审批"];if(index===total-1)return["付款归档","完成合同闭环"];if(index<Math.ceil(total*.55))return["采购审批","询价、招采与定标"];return["合同执行","会签、签章与支付"]}
 function render(){
   const empty=!activeRoute;
@@ -109,7 +148,7 @@ function render(){
   renderDetail();
   appendRelatedWorkflow();
 }
-function renderDetail(){const step=activeRoute.steps[activeStep];detail.innerHTML=`<span class="detail-index">步骤 ${String(activeStep+1).padStart(2,"0")} / ${String(activeRoute.steps.length).padStart(2,"0")}</span><h3>${step.title}</h3><div class="detail-meta"><span class="pill">${step.owner}</span><span class="pill">${step.system}</span></div><h4>所需材料</h4>${step.materials.length?`<ul>${step.materials.map(x=>`<li>${x}</li>`).join("")}</ul>`:"<p>无额外材料</p>"}${step.note?`<div class="detail-note"><strong>办理提醒</strong><br>${step.note}</div>`:""}`}
+function renderDetail(){const step=activeRoute.steps[activeStep];detail.innerHTML=`<span class="detail-index">步骤 ${String(activeStep+1).padStart(2,"0")} / ${String(activeRoute.steps.length).padStart(2,"0")}</span><h3>${step.title}</h3><div class="detail-meta"><span class="pill">${step.owner}</span><span class="pill">${step.system}</span></div><h4>所需材料</h4>${step.materials.length?`<ul>${step.materials.map(x=>`<li>${x}</li>`).join("")}</ul>`:`<p>${step.materialsNote||"无额外材料"}</p>`}${step.note?`<div class="detail-note"><strong>办理提醒</strong><br>${step.note}</div>`:""}`}
 function appendRelatedWorkflow(){
   const related=activeRoute.steps[activeStep].relatedWorkflow;
   if(related){const button=document.createElement("button");button.type="button";button.className="route-tab related-workflow";button.textContent="进入验证流程 →";button.onclick=()=>selectWorkflow(related);detail.appendChild(button);}
