@@ -17,7 +17,7 @@ const routes = [
   {id:"20-50",label:"20–50 万元",range:"涉及付款 · 20 万以上 50 万以内",summary:"进入招议标流程，但无需血液制品研究院请示，采购事项审批选择“不需要血液制品研究院审批”。",steps:bidSteps(false)},
   {id:"50-100",label:"50–100 万元",range:"涉及付款 · 50 万以上 100 万以内",summary:"需要血液制品研究院请示并完成招议标、定标、经营类请示后再签合同。",steps:bidSteps(true)},
   {id:"100-500",label:"100–500 万元",range:"涉及付款 · 100 万以上 500 万以内",summary:"需要血制公司与血液制品研究院审批，并转入天坛集中采购和招标。",steps:[
-    s("血液制品研究院请示","申请人 / 血液制品研究院","OA",["血液制品研究院请示处理笺","请示文件（附件 2）"]),
+    s("血液制品研究院请示","申请人 / 血液制品研究院","OA",["血液制品研究院请示处理笺","请示文件"]),
     s("蓉生经营类请示","申请人","OA",["蓉生经营类请示"]),
     s("采购事项审批","申请人 / 血液制品研究院","OA",["采购事项审批表","血液制品研究院请示处理笺","蓉生经营类请示"],"选择需要“血制公司审批”和“血液制品研究院审批”。"),
     s("血制公司集中采购申请","申请人","OA",["集中采购申请表","用户需求 Word","用户需求 PDF 签章版（蓝色笔签字）","前三项审批材料"],"需切换至蓉生 OA 系统。"),
@@ -121,7 +121,7 @@ function selectWorkflow(id){
   document.querySelector(".risk-grid").innerHTML=id==="equipment"
     ? '<article><span>URS</span><h3>强制项不超过 15%</h3><p>URS 需找黄海登记编号，签字后附于设备购置申请审批表后。</p></article><article><span>请示材料</span><h3>集采设备附三级请示</h3><p>50–100 万元目录内、100–500 万元及 500 万元以上，均需研究院、蓉生经营类及天坛公司请示。</p></article>'
     :originalRisks;
-  document.querySelector("footer").textContent=`${config.footer} · V9.1`;
+  document.querySelector("footer").textContent=`${config.footer} · V9.2`;
   renderTabs();
   if(id==="major")selectMajorOption(0,majorCategories[0].id);else render();
 }
