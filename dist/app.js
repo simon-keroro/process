@@ -35,7 +35,7 @@ function bidSteps(needsRequest){
   if(needsRequest) arr.push(s("血液制品研究院请示","申请人 / 血液制品研究院","OA",["血液制品研究院请示处理笺","请示文件（附件 2）"]));
   arr.push(
     s("采购事项审批","申请人 / 血液制品研究院","OA",["采购事项审批表"],needsRequest?"选择需要血液制品研究院审批。":"50 万以内选择不需要血液制品研究院审批。"),
-    s("招议标审核登记","申请人 / 招采","OA",["招议标文件 Word（附件 3）","用户需求 Word 与 PDF 签章版（附件 4）","综合评分细则 Word（附件 5）","关联方关系截图"],"用户需求 PDF 需蓝色笔签字；仅一家供应商时可上传工商信息。"),
+    s("招议标审核登记","申请人 / 招采","OA",["招议标文件 Word（附件 3）","用户需求 Word 与 PDF 签章版（附件 4）","综合评分细则 Word（附件 5）","关联方关系截图"],"用户需求 PDF 需蓝色笔签字；仅一家供应商时可上传工商信息。服务类由需求部门发起。" + (needsRequest ? "研究院请示和研究院采购事项审批后作为关联附件，发起招议标审核。" : "")),
     s("提交评标材料并等待定标","田怡 / 招采","外部等待",["招议标审核登记表","URS","招议标文件","评分表","采购事项审批表",...(needsRequest?["请示"]:[]),"关联方截图"],"纸质材料交行政楼 304 田怡；等待评标及定标请示。项目名称须与 URS 一致。","线下"),
     s("蓉生经营类请示","申请人","OA",["采购请示（附件 6）","定标请示"],"关联田怡发送的定标请示；流程中由田怡附言添加中标通知书。"),
     s("合同会签","申请人 / 黄海","OA",["合同","乙方营业执照","中标通知",...(needsRequest?["血液制品研究院请示处理笺"]:[]),"采购事项审批表","蓉生经营类请示"]),
@@ -55,6 +55,7 @@ const workflowConfig = {
   contract: {routes, title:"选择合同金额", count:"金额种类", source:originalSource, footer:"依据《0-合同流程-V01》整理"},
   equipment: {routes:equipmentRoutes, title:"选择设备采购金额", count:"金额种类", source:"依据《0-设备采购流程-V01》", footer:"依据《0-设备采购流程-V01》整理"},
   acceptance: {routes:acceptanceRoutes, title:"设备验收", count:"办理情形", source:"", footer:"设备验收流程"},
+  materials: {routes:materialRoutes, title:"选择物料采购情形", count:"采购情形", source:"", footer:"物料采购流程"},
   validation: {routes:validationRoutes, title:"选择验证情形", count:"验证情形", source:"", footer:"验证流程"},
   major: {routes:majorCategories, title:"选择事项类别", count:"事项类别", source:"", footer:"三重一大流程"}
 };
@@ -114,13 +115,13 @@ function selectWorkflow(id){
   document.querySelector("#documentCount").parentElement.hidden=id==="major";
   document.querySelector(".risk-section").hidden=!["contract","equipment"].includes(id);
   document.querySelector(".legend").hidden=id==="major";
-  document.querySelector(".legend .finance").parentElement.hidden=!["contract","equipment"].includes(id);
+  document.querySelector(".legend .finance").parentElement.hidden=!["contract","equipment","materials"].includes(id);
   document.querySelector("#workflow-title").textContent=id==="major"?"三重一大流程":"办理流程";
-  document.querySelector(".legend .finance").nextSibling.textContent=id==="equipment"?"SAP":"智慧报账";
+  document.querySelector(".legend .finance").nextSibling.textContent=["equipment","materials"].includes(id)?"SAP":"智慧报账";
   document.querySelector(".risk-grid").innerHTML=id==="equipment"
     ? '<article><span>URS</span><h3>强制项不超过 15%</h3><p>URS 需找黄海登记编号，签字后附于设备购置申请审批表后。</p></article><article><span>请示材料</span><h3>集采设备附三级请示</h3><p>50–100 万元目录内、100–500 万元及 500 万元以上，均需研究院、蓉生经营类及天坛公司请示。</p></article>'
     :originalRisks;
-  document.querySelector("footer").textContent=`${config.footer} · V8.0`;
+  document.querySelector("footer").textContent=`${config.footer} · V9.1`;
   renderTabs();
   if(id==="major")selectMajorOption(0,majorCategories[0].id);else render();
 }
